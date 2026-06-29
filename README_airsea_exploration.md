@@ -89,7 +89,7 @@ The script follows the oceanographic convention for flux directions:
 
 ## Customization
 
-Users can modify the script to explore different parameter ranges by adjusting the values in the exploration functions. The script provides a foundation for understanding air-sea interaction processes and can be extended for educational or research purposes.
+Users can modify the script to explore different parameter ranges by adjusting the values in the exploration functions. The script provides a foundation for analyzing air-sea interaction processes and can be extended for further research.
 
 ## Acknowledgments
 

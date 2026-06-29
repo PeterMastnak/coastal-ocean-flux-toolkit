@@ -1,186 +1,79 @@
-# Oceanographic Data Analysis Tools
+# Coastal Ocean Flux Toolkit
 
-This repository contains Python scripts for analyzing oceanographic data using the GSW-Python package (TEOS-10). It was developed as part of a graduate course in Observational Methods in Coastal Oceanography.
+A Python toolkit I developed for quantitative analysis of coastal and open-ocean
+observations: air–sea flux estimation, TEOS-10 seawater thermodynamics, and
+error-propagation methods for in-situ measurements. The code grew out of my own
+work analyzing field datasets (Monterey Bay air–sea exchange and Palau tidal-flow
+drag) and is organized as a reusable set of methods rather than one-off scripts.
 
-## Features
+## What's inside
 
-- Exploration of seawater density relationships with pressure, temperature, and salinity
-- Analysis of water mass mixing and cabbeling effects
-- Generation of synthetic oceanographic data
-- Processing and visualization of ocean temperature and salinity profiles
-- Comparison of different oceanographic measures (Absolute vs. Practical Salinity, Conservative vs. In-situ Temperature)
+- **Air–sea flux estimation** — bulk-formula heat, momentum, and gas exchange
+  calculations, with a Monterey Bay case study comparing flux parameterizations
+  across forcing conditions.
+- **Seawater thermodynamics (TEOS-10)** — density, conservative vs. in-situ
+  temperature, and absolute vs. practical salinity relationships built on the
+  GSW-Python implementation, including water-mass mixing and cabbeling effects.
+- **Drag-coefficient (C_D) uncertainty analysis** — a finite-difference momentum
+  method for estimating bottom drag from paired pressure sensors in tidal flow,
+  with full error propagation to recommend optimal sensor geometry.
+- **Supporting utilities** — synthetic data generation, `.mat` ingestion, and
+  reproducible figure pipelines.
+
+## Methods
+
+### Air–sea flux
+`air_sea_flux_monterey.py`, `monterey_airsea_exploration.py`, and the
+`airsea_*` modules estimate turbulent and radiative fluxes from bulk variables
+and compare parameterization choices against observed forcing.
+
+### Seawater density and thermodynamics
+`explore_density_relationships.py` and `gsw_examples.py` characterize how
+density responds to pressure, temperature, and salinity, and produce T–S
+diagrams and water-mass mixing diagnostics from TEOS-10.
+
+### Drag-coefficient uncertainty
+`cd_uncertainty_analysis.py` estimates the quadratic drag coefficient from
+two pressure sensors using a centered finite-difference momentum balance:
+
+$$C_D = -g\,h_{i+1}\,\frac{\xi_{i+2}-\xi_i}{x_{i+2}-x_i}\,\frac{1}{U_{i+1}\,|U_{i+1}|}$$
+
+where $\xi$ are surface elevations, $x$ sensor positions, $h$ depth, and $U$ the
+depth-averaged velocity. Discretizing at the actual sensor locations (rather than
+assuming a continuous gradient) is what makes the estimate match the experimental
+setup. Propagating measurement uncertainties — surface elevation (±1 mm), position
+(±1 cm), depth (±1 cm), and velocity (±5 cm/s) — over sensor separations of
+0.5–5 m and velocities of 0.1–1.5 m/s yields a practical recommendation: a
+~2 m sensor separation and velocities above 0.5 m/s minimize the relative error
+on C_D. Outputs include `cd_uncertainty_contour.png` and
+`cd_uncertainty_vs_separation.png`.
 
 ## Installation
 
-1. Clone this repository:
 ```bash
-git clone [repository-url]
-```
-
-2. Create and activate a virtual environment (recommended):
-```bash
+git clone https://github.com/PeterMastnak/coastal-ocean-flux-toolkit.git
+cd coastal-ocean-flux-toolkit
 python -m venv venv
-source venv/bin/activate  # On Windows, use: venv\Scripts\activate
-```
-
-3. Install required packages:
-```bash
+source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## Scripts
-
-- `explore_density_relationships.py`: Investigates how pressure, temperature, and salinity affect seawater density
-- `gsw_examples.py`: Demonstrates basic usage of the GSW package and creates T-S diagrams
-- `process_ocean_data.py`: Processes and visualizes oceanographic data
-- `generate_sample_data.py`: Creates synthetic ocean data for testing and learning
-
 ## Usage
 
-Each script can be run independently. For example:
+Each module runs independently and writes figures/summaries to the working
+directory, e.g.:
 
 ```bash
 python explore_density_relationships.py
+python air_sea_flux_monterey.py
+python cd_uncertainty_analysis.py
 ```
-
-This will generate various plots and a summary report in the current directory.
-
-## Output Files
-
-The scripts generate several visualization files:
-- Density relationship plots (PNG format)
-- Temperature and salinity profiles
-- T-S diagrams
-- Summary reports (TXT format)
 
 ## Requirements
 
-- Python 3.7+
-- gsw-python
-- numpy
-- matplotlib
-- netCDF4
-- cmocean
-
-See `requirements.txt` for specific version requirements.
-
-## Contributing
-
-This is an educational project. Feel free to fork and modify for your own use. If you find any bugs or have suggestions, please open an issue.
+Python 3.7+, with `gsw-python`, `numpy`, `scipy`, `matplotlib`, `netCDF4`, and
+`cmocean`. See `requirements.txt` for pinned versions.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Developed for the Observational Methods in Coastal Oceanography course
-- Uses the GSW-Python package based on TEOS-10 
-
-# C_D Uncertainty Analysis for Palau Tidal Flow
-
-This analysis examines the uncertainty in drag coefficient (C_D) measurements for the Palau tidal flow, considering different pressure sensor separations and tidal flow velocities.
-
-## Evolution of the Analysis Approach
-
-### Initial Approach (Oversimplification)
-Initially, we treated the problem using a continuous gradient approach:
-- Used direct pressure differences: $C_D = \frac{2\Delta p}{\rho u^2}$
-- Assumed continuous pressure gradient
-- Did not properly account for the spatial discretization of measurements
-
-This was an oversimplification because:
-1. Real measurements are taken at discrete points
-2. Ignored the actual spatial arrangement of sensors
-3. Did not properly account for the momentum balance
-
-### Correct Approach (Finite Differences)
-The proper approach uses finite differences to match how measurements are actually made:
-- Uses the finite difference equation: $g\frac{\xi_{i+2}-\xi_i}{x_{i+2}-x_i} = -C_DU_{i+1}|U_{i+1}|/h_{i+1}$
-- Explicitly accounts for measurement locations
-- Properly represents the spatial discretization
-- Matches the actual experimental setup with two pressure sensors
-
-## Methodology
-
-### 1. Finite Difference Implementation
-The analysis uses centered finite differences:
-- Measurements at positions i and i+2
-- Velocity and depth evaluated at i+1
-- Properly accounts for the spatial arrangement of measurements
-
-### 2. C_D Calculation
-From the finite difference equation:
-$C_D = -g h \frac{\xi_{i+2}-\xi_i}{x_{i+2}-x_i} \frac{1}{U_{i+1}|U_{i+1}|}$
-
-Where:
-- $\xi_{i+2}, \xi_i$ are water surface elevations at positions i+2 and i
-- $x_{i+2}, x_i$ are sensor positions
-- $h_{i+1}$ is the water depth at position i+1
-- $U_{i+1}$ is the depth-averaged velocity at position i+1
-
-### 3. Uncertainty Analysis
-Considers uncertainties in:
-- Surface elevation measurements (ξ): ±1mm
-- Position measurements (x): ±1cm
-- Depth measurements (h): ±1cm
-- Velocity measurements (U): ±5cm/s
-
-### 4. Parameter Ranges
-- Sensor separations: 0.5 to 5 meters
-- Velocities: 0.1 to 1.5 m/s
-- Target C_D: 0.025 (midpoint of 0.02-0.03 range)
-
-## Results and Interpretation
-
-### 1. Optimal Sensor Separation
-- Recommended separation: approximately 2 meters
-- Balances:
-  - Need for measurable surface elevation difference
-  - Spatial resolution of measurements
-  - Practical deployment considerations
-
-### 2. Velocity Effects
-- Minimum reliable velocity: 0.5 m/s
-- Higher velocities generally yield lower uncertainty
-- Very low velocities (< 0.3 m/s) produce unreliable results
-
-### 3. Uncertainty Characteristics
-- Velocity uncertainty dominates at low velocities
-- Sensor separation becomes more critical at higher velocities
-- Surface elevation measurement uncertainty more significant at larger separations
-
-## Recommendations
-
-1. **Measurement Setup**:
-   - Use 2-meter sensor separation
-   - Ensure accurate position measurements
-   - Maintain consistent sensor alignment
-
-2. **Operating Conditions**:
-   - Target measurements at velocities > 0.5 m/s
-   - Consider multiple measurements during peak tidal flows
-   - Avoid very low velocity conditions
-
-3. **Uncertainty Management**:
-   - Focus on velocity measurement accuracy
-   - Carefully measure sensor positions
-   - Consider averaging multiple measurements
-
-## Running the Analysis
-
-1. Required Python packages:
-   ```
-   numpy
-   matplotlib
-   scipy
-   ```
-
-2. Run the script:
-   ```
-   python cd_uncertainty_analysis.py
-   ```
-
-3. Output:
-   - `cd_uncertainty_contour.png`: 2D visualization of uncertainty
-   - `cd_uncertainty_vs_separation.png`: Uncertainty vs separation for different velocities 
+Released under the MIT License — see [LICENSE](LICENSE).

@@ -1,6 +1,6 @@
 # Air-Sea Flux Toolbox Implementation
 
-This project provides a Python implementation of the air-sea flux toolbox for calculating surface fluxes of momentum, heat, and moisture at the ocean-atmosphere interface. The implementation is based on the COARE 3.0 algorithm with modifications. This project was developed for the Observational Methods in Coastal Oceanography course.
+This module provides a Python implementation I developed for calculating surface fluxes of momentum, heat, and moisture at the ocean-atmosphere interface. The implementation is based on the COARE 3.0 algorithm with modifications, and is applied to a Monterey Bay case study.
 
 ## Files
 
@@ -124,4 +124,4 @@ Relative humidity primarily affects latent heat flux:
 
 ## Acknowledgments
 
-This implementation is inspired by various air-sea toolboxes, including the original MATLAB Air-Sea Toolbox, the COARE algorithm, and the Python-AirSea package. The code has been adapted and simplified for educational purposes in the Observational Methods in Coastal Oceanography course. 
+This implementation draws on established air-sea flux references, including the original MATLAB Air-Sea Toolbox, the COARE algorithm, and the Python-AirSea package, reimplemented and adapted here for coastal-flux analysis.

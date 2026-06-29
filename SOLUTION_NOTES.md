@@ -10,11 +10,11 @@ https://www.ncei.noaa.gov/data/oceans/woa/WOA18/DATA/temperature/netcdf/decav/1.
 
 ## Solution Approach
 
-Instead of trying to find and fix the external data source, we created a local synthetic oceanographic dataset that mimics the structure of the World Ocean Atlas data. This approach has several advantages:
+Instead of trying to find and fix the external data source, I built a local synthetic oceanographic dataset that mimics the structure of the World Ocean Atlas data. This approach has several advantages:
 
 1. It eliminates the dependency on external data sources that might change or become unavailable
 2. It provides a controlled, reproducible dataset for testing
-3. It allows students to understand how oceanographic data is structured
+3. It makes the data structure explicit and easy to inspect
 
 ## Changes Made
 
@@ -51,13 +51,13 @@ Instead of trying to find and fix the external data source, we created a local s
    - `temperature_map.png`: Map view of temperature at a specific depth
    - `ocean_profiles.png`: Vertical profiles of temperature, salinity, density, and buoyancy frequency
 
-## Benefits for Teaching
+## Why this design
 
-This solution provides a self-contained example for teaching oceanographic data processing:
+This provides a self-contained workflow for oceanographic data processing:
 
-1. Students can experiment with the data generator to create different oceanographic features
-2. The processing workflow demonstrates common tasks in oceanographic data analysis
-3. The GSW Toolbox usage showcases how to calculate derived properties from basic measurements
+1. The data generator can be configured to create different oceanographic features
+2. The processing workflow covers common tasks in oceanographic data analysis
+3. The GSW Toolbox usage shows how to calculate derived properties from basic measurements
 4. Visualizations illustrate standard techniques for representing oceanographic data
 
-All of this can be done without relying on external data sources, making it ideal for classroom settings without reliable internet access. 
+All of this runs without relying on external data sources, making the pipeline fully reproducible offline.
